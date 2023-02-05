@@ -27,6 +27,17 @@ read -r -p "Select an option-> " menu
 case $menu in
 #Option 1
 1)
+#Service DHCP?
+service --status-all | grep "isc-dhcp-server" &>/dev/null
+if [[ $? != 0 ]]
+then
+echo "The service isc-dhcp-server is not installed"
+echo "Exiting..."
+sleep 0.5
+exit
+fi
+
+#Script
 echo ""
 read -r -p "Do you want to start the installation(Y/N)-> " start
 
@@ -81,7 +92,7 @@ then
     fi
     sleep 0.5
     echo "[✓] Configuration file created"
-
+    echo ""
 #Signed Ip
     echo "[*] Creating Signed IP file"
     if [[ -c $path/signed_ip.txt ]]
@@ -90,7 +101,7 @@ then
     fi
     sleep 0.5
     echo "[✓] Signed IP file created"
-
+    echo ""
 
 #DHCP Log
    echo "[*] Creating Dhcp extracted logs file"
@@ -100,7 +111,8 @@ then
     fi
     sleep 0.5
     echo "[✓] Dhcp extracted logs file created"
-
+    echo ""
+    
 #Crontab
     echo "[*] Creating Crontab task"
     findlogdhcp=$(find / -name dhcp_extracted.txt)
