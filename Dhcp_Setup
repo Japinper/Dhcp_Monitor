@@ -1,0 +1,165 @@
+#!/bin/bash
+
+clear
+echo ' ____  _   _  ____ ____       __  __  ___  _   _ ___ _____ ___  ____'
+echo '|  _ \| | | |/ ___|  _ \     |  \/  |/ _ \| \ | |_ _|_   _/ _ \|  _ \'
+echo '| | | | |_| | |   | |_) |____| |\/| | | | |  \|  | |  | |  | | | |_) |'
+echo '| |_| |  _  | |___|  __/_____| |  | | |_| | |\   | |  | |  |_| |  _ <'
+echo '|____/|_| |_|\____|_|        |_|  |_|\___/|_| \_|___| |_| \___/|_| \_\'
+echo ""
+echo "Made By Japinper        GitHub https://github.com/Japinper/Dhcp_Monitor"
+echo ""
+
+#Are you roo?
+if [[ $EUID != 0 ]]
+then
+    echo "You need to be root to execute the script"
+    exit
+fi
+
+#Menu
+echo "[1] Installation"
+echo "[2] Help"
+echo "[3] Exit"
+echo ""
+read -r -p "Select an option-> " menu
+
+case $menu in
+#Option 1
+1)
+echo ""
+read -r -p "Do you want to start the installation(Y/N)-> " start
+
+if [[ $start == "Y" ]] || [[ $start == "y" ]]
+then
+    read -r -p "Select the path to save the files(ex:/home/...)-> " path
+    if [[ ! -d $path ]]
+    then
+        echo "The file path doesn't exist"
+        echo "Leaving the installaiton..."   
+        sleep 0.5
+        exit
+    fi
+
+    echo "Running installation..."
+    sleep 1
+    clear
+
+#Telegram configuration  
+    echo "[*] Bot Telegram Configuration..."
+    read -r -p "- Chat ID -> " telegram_chat 
+    read -r -p "- Bot Token ->" telegram_bot
+    echo "[✓] Bot Telegram Configuration"
+    echo ""
+
+#DHCP.log file
+    echo "[*] Creating DHCP.log file..."
+    sleep 0.5
+    echo "log-facility local1;" >> /etc/dhcp/dhcpd.conf
+    echo "local1.info /var/log/dhcp.log" >> /etc/rsyslog.conf 
+    
+    if [[ -c /var/log/dhcp.log ]]
+    then
+    touch dhcp.log
+    fi
+    echo "For the proper functioning is necessary restart the (dhcp) and (rsyslog) service"
+    read -r -p "- Do you want to do now?(Y/N)-> " reboot
+
+    if [[ $reboot == "Y" ]] || [[ $reboot == "y" ]]
+    then
+        service isc-dhcp-server restart
+        service rsyslog restart
+    fi
+    echo "[✓] DHCP.log file created"
+    echo ""
+
+#Configuration File
+    echo "[*] Creating configuration file"
+    if [[ -c $path/file.conf ]]
+    then
+    touch file.conf
+    fi
+    sleep 0.5
+    echo "[✓] Configuration file created"
+
+#Signed Ip
+    echo "[*] Creating Signed IP file"
+    if [[ -c $path/signed_ip.txt ]]
+    then
+    touch signed_ip.txt
+    fi
+    sleep 0.5
+    echo "[✓] Signed IP file created"
+
+
+#DHCP Log
+   echo "[*] Creating Dhcp extracted logs file"
+    if [[ -c $path/dhcp_extracted.txt ]]
+    then
+    touch dhcp_extracted.txt
+    fi
+    sleep 0.5
+    echo "[✓] Dhcp extracted logs file created"
+
+#Crontab
+    echo "[*] Creating Crontab task"
+    findlogdhcp=$(find / -name dhcp_extracted.txt)
+    echo "* * * * * bash $findlogdhcp" >> /var/spool/cron/crontabs/root
+    echo "[✓]Crontab task created"
+    echo ""
+
+#Finishing Setup
+    echo "Congratulations!!"
+    echo "Your script is now configured and redy to be used"
+    base64 -d <<< "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICA6PT09PT09PT09PT09PT09PT09PT09OiAgICAgICAKICAgICAgK0BAJSUlJSUlJSUlJSUlJSUlJSUlJUBAKyAgICAgIAogICAgICAjQCogKysrKysrICAgICAtPSAgPS0gKkAjICAgICAgCiAgICAgICNAKi4qKioqKiogICAgID0rLi4rKyAqQCMgICAgICAKICAgICAgI0BAKioqKioqKioqKioqKioqKioqKiVAIyAgICAgIAogICAgICAjQCUrKysrKysrKysrKysrKysrKysrJUAjICAgICAgCiAgICAgICNAKi4lJSUlJSUgICAgICAgICAgICA9IysgICAgICAKICAgICAgI0AjLj09PT09PSAgICAgICAgICAgICAgICAgICAgIAogICAgICAjQEBAQEBAQEBAQEA9ICAgIC4uIC0lQCouIDogICAgCiAgICAgICNAIzotLS0tLS0uLiAgICAtQEBAQEBAQEBAQCMgICAKICAgICAgI0AqLkBAQEBAQCAgICAgIC1AQEAlKz0qQEBAJS4gIAogICAgICAjQCU9PT09PT09PT0uICBAQEBAJSAgICAtQEBAQCogCiAgICAgIDoqJUBAQEBAQEBAQC0gIDorQEBAKzouLSVAQEAtLiAKICAgICAgICAgICAgICAgICAgICAgIDpAQEBAQEBAQEBAIyAgIAogICAgICAgICAgICAgICAgICAgICAgID09LStAQCU9LSs6ICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgIC0tOiAgICAgICAK"
+    echo "Thanks for use Dhcp_Monitor          By Japinper"
+    sleep 1
+    exit
+
+#Principal If
+elif [[ $start == "N" ]] || [[ $start == "n" ]]
+then
+    echo "Exiting..."
+    sleep 0.5
+fi
+;;
+
+#Option 2
+2)
+clear
+echo ' _   _ _____ _     ____'
+echo '| | | | ____| |   |  _ \'
+echo '| |_| |  _| | |   | |_) |'
+echo '|  _  | |___| |___|  __/'
+echo '|_| |_|_____|_____|_|'
+echo ""
+echo "[/] What files save the selected path?"
+echo "   - Configuration file"
+echo "   - Registered IP"
+echo "   - DHCP logs"
+echo ""
+echo "[/] Telegram Settings"
+echo "   - Chat Id -> You can see your chat ID in this BOT https://telegram.me/userinfobot"
+echo "   - Token BOT -> You can your BOT token in the BotFather Chat writing /mybots "
+echo ""
+echo " How can I create a Telegram BOT?"
+echo " 1. Login in Telegram"
+echo " 2. Add to your contacts BotFather https://telegram.me/BotFather"
+echo " 3. In the Chat write /start and the BOT will give you the options"
+echo " 4. Write /newbot"
+echo " 5. Enter the name for your BOT"
+echo " 6. Start and enjoy the BOT ;)"
+echo ""
+echo "[/] Files"
+echo "   - Dhcp.log -> This file extract all DHCP logs from syslog /var/log/dhcp.log"
+;;
+
+#Option 3
+3)
+echo "Exiting..."
+echo "Thanks for use DHCP_MONITOR"
+sleep 0.5
+exit
+;;
+
+esac
