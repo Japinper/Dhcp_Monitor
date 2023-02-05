@@ -23,6 +23,7 @@ echo "[2] Help"
 echo "[3] Exit"
 echo ""
 read -r -p "Select an option-> " menu
+echo ""
 
 case $menu in
 #Option 1
@@ -42,7 +43,8 @@ systemctl is-active isc-dhcp-server &>/dev/null
 
 if [[ $? != 0 ]]
 then
-read -r -p "The service isc-dhcp-service is inactive, Do you want to start the service?(Y/N)-> " startdhcp
+echo "The service isc-dhcp-service is inactive"
+read -r -p "Do you want to start the service?(Y/N)-> " startdhcp
 echo ""
     if [[ $startdhcp == "Y" ]] || [[ $startdhcp == "y" ]]
     then
@@ -52,6 +54,7 @@ echo ""
     clear
     fi
 fi
+clear
 #Script
 echo ""
 read -r -p "Do you want to start the installation(Y/N)-> " start
@@ -75,7 +78,7 @@ then
     echo "[*] Bot Telegram Configuration..."
     read -r -p "- Chat ID -> " telegram_chat 
     read -r -p "- Bot Token ->" telegram_bot
-    echo "[✓] Bot Telegram Configuration"
+    echo "[!] Bot Telegram Configuration"
     echo ""
 
 #DHCP.log file
@@ -84,9 +87,9 @@ then
     echo "log-facility local1;" >> /etc/dhcp/dhcpd.conf
     echo "local1.info /var/log/dhcp.log" >> /etc/rsyslog.conf 
     
-    if [[ -c /var/log/dhcp.log ]]
+    if [[ ! -c /var/log/dhcp.log ]]
     then
-    touch dhcp.log
+    touch /var/log/dhcp.log
     fi
     echo "For the proper functioning is necessary restart the (dhcp) and (rsyslog) service"
     read -r -p "- Do you want to do now?(Y/N)-> " reboot
@@ -96,33 +99,33 @@ then
         service isc-dhcp-server restart
         service rsyslog restart
     fi
-    echo "[✓] DHCP.log file created"
+    echo "[!] DHCP.log file created"
     echo ""
 
 #Configuration File
     echo "[*] Creating configuration file"
-    if [[ -c $path/file.conf ]]
+    if [[ ! -c $path/file.conf ]]
     then
-    touch file.conf
+    touch $path/file.conf
     fi
     sleep 0.5
-    echo "[✓] Configuration file created"
+    echo "[!] Configuration file created"
     echo ""
 #Signed Ip
     echo "[*] Creating Signed IP file"
-    if [[ -c $path/signed_ip.txt ]]
+    if [[ ! -c $path/signed_ip.txt ]]
     then
-    touch signed_ip.txt
+    touch $path/signed_ip.txt
     fi
     sleep 0.5
-    echo "[✓] Signed IP file created"
+    echo "[!] Signed IP file created"
     echo ""
 
 #DHCP Log
    echo "[*] Creating Dhcp extracted logs file"
-    if [[ -c $path/dhcp_extracted.txt ]]
+    if [[ ! -c $path/dhcp_extracted.txt ]]
     then
-    touch dhcp_extracted.txt
+    touch $path/dhcp_extracted.txt
     fi
     sleep 0.5
     echo "[✓] Dhcp extracted logs file created"
