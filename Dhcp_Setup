@@ -44,7 +44,7 @@ if [[ $? != 0 ]]
 then
 read -r -p "The service isc-dhcp-service is inactive, Do you want to start the service?(Y/N)-> " startdhcp
 echo ""
-    if [[ startdhcp == "Y" ]] || [[ startdhcp == "y" ]]
+    if [[ $startdhcp == "Y" ]] || [[ $startdhcp == "y" ]]
     then
     service isc-dhcp-server start
     echo "Now the service is Up"
