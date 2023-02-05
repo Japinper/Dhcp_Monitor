@@ -37,6 +37,21 @@ sleep 0.5
 exit
 fi
 
+#Service Up
+systemctl is-active isc-dhcp-server &>/dev/null
+
+if [[ $? != 0 ]]
+then
+read -r -p "The service isc-dhcp-service is inactive, Do you want to start the service?(Y/N)-> " startdhcp
+echo ""
+    if [[ startdhcp == "Y" ]] || [[ startdhcp == "y" ]]
+    then
+    service isc-dhcp-server start
+    echo "Now the service is Up"
+    sleep 0.5
+    clear
+    fi
+fi
 #Script
 echo ""
 read -r -p "Do you want to start the installation(Y/N)-> " start
@@ -112,13 +127,21 @@ then
     sleep 0.5
     echo "[✓] Dhcp extracted logs file created"
     echo ""
-    
+
 #Crontab
     echo "[*] Creating Crontab task"
     findlogdhcp=$(find / -name Dhcp_extracted)
     echo "* * * * * bash $findlogdhcp" >> /var/spool/cron/crontabs/root
     echo "[✓]Crontab task created"
     echo ""
+
+#File.conf
+{
+echo "chat_id=$telegram_chat"
+echo "token_bot=$telegram_bot"
+echo "files_path=$path"
+
+} > $path/file.conf
 
 #Finishing Setup
     echo "Congratulations!!"
