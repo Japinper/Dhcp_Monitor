@@ -115,7 +115,7 @@ then
     
 #Crontab
     echo "[*] Creating Crontab task"
-    findlogdhcp=$(find / -name dhcp_extracted.txt)
+    findlogdhcp=$(find / -name Dhcp_extracted)
     echo "* * * * * bash $findlogdhcp" >> /var/spool/cron/crontabs/root
     echo "[✓]Crontab task created"
     echo ""
