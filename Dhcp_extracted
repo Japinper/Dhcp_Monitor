@@ -1,25 +1,27 @@
 #!/bin/bash
 
-source Dhcp_Setup
+fileconf=$(find / -name file.conf)
+
+source $fileconf
 
 grep "DHCPACK" /var/log/dhcp.log >> $files_path/dhcp_log.txt
 
 
-address=$(tail -1  dhcp_log.txt | awk '{print substr ($8,1)}')
-mac=$(tail -1 dhcp_log.txt | awk '{print substr($10,1)}')
-OSname=$(tail -1 dhcp_log.txt | awk '{print substr($11,1)}')
-time=$(tail -1 dhcp_log.txt | awk '{print substr($3,1)}')
+address=$(tail -1  $files_path/dhcp_log.txt | awk '{print substr ($8,1)}')
+mac=$(tail -1 $files_path/dhcp_log.txt | awk '{print substr($10,1)}')
+OSname=$(tail -1 $files_path/dhcp_log.txt | awk '{print substr($11,1)}')
+time=$(tail -1 $files_path/dhcp_log.txt | awk '{print substr($3,1)}')
 
 
-echo "Time: $time - Address: $address -  MAC: $mac - Machine name: $OSname" >> dhcp_extracted.txt
+echo "Time: $time - Address: $address -  MAC: $mac - Machine name: $OSname" >> $files_path/dhcp_extracted.txt
 
-report=$(echo -e "New Ip signed \nTime: $time \nIp Address: $address \nMAC: $mac \Machine Name: $OSname")
+report=$(echo -e "New Ip signed \nTime: $time \nIp Address: $address \nMAC: $mac \nMachine Name: $OSname")
 
-if grep -q $address  $files_path/signed_ip.txt 
+if grep -q $address  $files_path/signed_ip.txt
 then
  :
 else
-  curl -s -X POST https://api.telegram.org/bot$token_bot/sendMessage -d chat_id=$telchat_id -d text="$report"  &>/dev/null
-  echo "IP Address: $address - Os Name: $OSname - MAC: $mac" >> signed_ip.txt
+  curl -s -X POST https://api.telegram.org/bot$token_bot/sendMessage -d chat_id=$chat_id -d text="$report" &>/dev/null
+  echo "IP Address: $address - Os Name: $OSname - MAC: $mac" >> $files_path/signed_ip.txt
 fi
 rm -r $files_path/dhcp_log.txt
