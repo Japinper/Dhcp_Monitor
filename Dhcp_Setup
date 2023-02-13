@@ -162,7 +162,7 @@ echo "[*] Creating service"
         ExecStart=/usr/bin/env bash $finddhcpbot
 
         [Install]
-        WantedBy=multi-user.target" >> dhcp_monitor.service
+        WantedBy=multi-user.target" >> /lib/systemd/system/dhcp_monitor.service
 
         systemctl start dhcp_monitor.service
         systemctl enable dhcp_monitor.service
