@@ -140,8 +140,8 @@ then
     echo ""
 
 #Commands from bot
-read -r -p "Do you want to install a service for send commands with your telegram bot(S/N)-> " send_telbot
-if [[ $send_telbot == "S" ]] || [[ $send_telbot == "s" ]]
+read -r -p "Do you want to install a service for send commands with your telegram bot(Y/N)-> " send_telbot
+if [[ $send_telbot == "Y" ]] || [[ $send_telbot == "y" ]]
 then
 echo "[*] Creating service" 
     if [[ ! -c /lib/systemd/system/dhcp_monitor.service ]]
@@ -162,7 +162,7 @@ echo "[*] Creating service"
         ExecStart=/usr/bin/env bash $finddhcpbot
 
         [Install]
-        WantedBy=multi-user.target"
+        WantedBy=multi-user.target" >> dhcp_monitor.service
 
         systemctl start dhcp_monitor.service
         systemctl enable dhcp_monitor.service
@@ -171,7 +171,7 @@ echo "[*] Creating service"
 echo "[!] Service Created"    
 fi
 
-sleep 1
+sleep 1.5
 clear
 #File.conf
 {
