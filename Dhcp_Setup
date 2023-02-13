@@ -129,16 +129,50 @@ then
     touch $path/dhcp_extracted.txt
     fi
     sleep 0.5
-    echo "[✓] Dhcp extracted logs file created"
+    echo "[!] Dhcp extracted logs file created"
     echo ""
 
 #Crontab
     echo "[*] Creating Crontab task"
     findlogdhcp=$(find / -name Dhcp_extracted)
     echo "* * * * * bash $findlogdhcp" >> /var/spool/cron/crontabs/root
-    echo "[✓]Crontab task created"
+    echo "[!]Crontab task created"
     echo ""
 
+#Commands from bot
+read -r -p "Do you want to install a service for send commands with your telegram bot(S/N)-> " send_telbot
+if [[ $send_telbot == "S" ]] || [[ $send_telbot == "s" ]]
+then
+echo "[*] Creating service" 
+    if [[ ! -c /lib/systemd/system/dhcp_monitor.service ]]
+    then
+        touch /lib/systemd/system/dhcp_monitor.service
+        finddhcpbot=$(find / -name Dhcp_commandbot )
+        echo -e "
+        [Unit]
+        Description=dhcp_monitor
+        After=network.target
+        StartLimitIntervalSec=0
+
+        [Service]
+        Type=simple
+        Restart=always
+        RestartSec=1
+        User=root
+        ExecStart=/usr/bin/env bash $finddhcpbot
+
+        [Install]
+        WantedBy=multi-user.target"
+
+        systemctl start dhcp_monitor.service
+        systemctl enable dhcp_monitor.service
+        systemctl status dhcp_monitor.service | grep "active"
+    fi
+echo "[!] Service Created"    
+fi
+
+sleep 1
+clear
 #File.conf
 {
 echo "chat_id=$telegram_chat"
