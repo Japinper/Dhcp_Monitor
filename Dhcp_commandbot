@@ -1,0 +1,68 @@
+#!/bin/bash
+# With this script you can send commands from your telegram bot.
+
+fileconf=$(find / -name file.conf)
+
+source $fileconf
+
+output=" "
+# Function to send messages.
+function send_message() {
+  local message="$1"
+  curl -s -X POST https://api.telegram.org/bot$token_bot/sendMessage -d chat_id=$chat_id -d text="$message" &>/dev/null
+}
+
+# Este es el bucle principal que se encarga de recibir los comandos.
+while true; do
+  # Obtiene los últimos mensajes enviados al chat.
+  lastmsg=$(curl -s https://api.telegram.org/bot$token_bot/getUpdates)
+
+  # Find the last command.
+  command=$(echo $lastmsg | grep -o '"text":"[^"]\+"' | sed 's/"text":"\([^"]\+\)"/\1/' | tail -n 1)
+
+# Customized commands.
+if [[ $command == "stop" ]] && [[ $equal != $command ]]
+then
+send_message "Stoping the task (If you want to start go to the server)"
+ exit
+fi
+
+if [[ $command == "network" ]] && [[ $equal != $command ]]
+then
+output=$(eval ifconfig)
+send_message "$output"
+fi
+
+if [[ $command == "devices" ]] && [[ $equal != $command ]]
+then
+output=$(eval arp -v)
+send_message "$output"
+fi
+
+if [[ $command == "ls" ]] && [[ $equal != $command ]]
+then
+output=$(eval ls)
+send_message "$output"
+fi
+
+if [[ $command == "whoami" ]] && [[ $equal != $command ]]
+then
+output=$(eval whoami)
+send_message "$output"
+fi
+
+if [[ $command == "ping" ]] && [[ $equal != $command ]]
+then
+output=$(eval ping google.com -c 1)
+send_message "$output"
+fi
+
+if [[ $command == "help" ]] && [[ $equal != $command ]]
+then
+output=$(echo -e "Commands \nstop: Finish the service \nnetwork: Show Ip Configuration \ndevices: Show devices connected and his Ip - MAC \nls: List directory \nwhoami: You see what user are you \nping: Check if you have connection (default: google.com)")
+send_message "$output"
+fi
+
+equal=$command
+  sleep 1
+done
